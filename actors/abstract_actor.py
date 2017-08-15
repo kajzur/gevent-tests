@@ -9,6 +9,7 @@ class AbstractActor(gevent.Greenlet):
     def __init__(self):
         self.inbox = Queue()
         self.local_storage = local()
+        print 'Creating %r ...' % self
         gevent.Greenlet.__init__(self)
 
     def process(self, args):
@@ -17,22 +18,23 @@ class AbstractActor(gevent.Greenlet):
     def receive(self, message):   
         arguments = message['args']
         path = message['path']
-        current_step = path.pop()
-        args = self.process(arguments)
-        self.go_next(current_step, {
-            'args': args,
-            'path': path
-        })
+        if len(path) > 1:
+            next_step = path[-1]
+            path.pop()
+        else:
+            next_step = None
 
-    def go_next(self, name, message):
-        actor = manager.get_next_actor(name)
-        actor.inbox.put(message)
+        print 'Processing in %r, next will be %r' % (self, next_step)
+        args = self.process(arguments)
+        if args:
+            manager.go_next(next_step, {
+                'args': args,
+                'path': path
+            })
 
     def _run(self):
         self.running = True
-
+        print 'Waiting in %r' % self
         while self.running:
-            print 'waiting for msg on %r' %self
             message = self.inbox.get()
-            print 'msg %r' %message
             self.receive(message)

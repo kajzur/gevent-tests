@@ -19,7 +19,6 @@ class RedisActor(StartActor):
         return self.path.split(self.PATH_SEPARATOR)
 
     def handle(self, msg):
-        print msg
         arguments, path = msg.split(self.SEPARATOR)
         arguments = self.connection.get(arguments)
         path = self.connection.get(path)
@@ -29,7 +28,7 @@ class RedisActor(StartActor):
         parsed_path = self.get_path()
         im = Image.open(arguments)
 
-        manager.go_next(parsed_path[0], {'path': parsed_path,'args':im})
+        manager.go_next(parsed_path[0], {'path': parsed_path, 'args':im})
 
     def prepare_input(self):
         self.subscriber.subscribe(self.CHANNEL)

@@ -25,7 +25,7 @@ class Manager():
 
     def go_next(self, next_path, args):
         actor_instance = self.get_next_actor(next_path)
-        print 'Putting into  %r, is run:' % actor_instance
+        print 'Putting into  %r' % actor_instance
         actor_instance.inbox.put(args)
         gevent.sleep(0)
 

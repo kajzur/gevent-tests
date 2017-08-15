@@ -19,14 +19,16 @@ def inheritors(klass):
 
 def setup():
     all_actors = inheritors([AbstractActor, StartActor])
-    [manager.add(actor()) for actor in all_actors]
+    all_actors_instances = [actor() for actor in all_actors]
     to_join = []
-    for actor in all_actors:
-        instance_of_actor = actor()
-        instance_of_actor.start()
-        to_join.append(instance_of_actor)
+    for actor in all_actors_instances:
+        actor.start()
+        manager.add(actor)
+        to_join.append(actor)
+
+    print 'Created %r' % to_join
 
     gevent.joinall(to_join)
- 
+
 
 setup()
